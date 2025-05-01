@@ -1,0 +1,17 @@
+# Navigate to your folder
+cd path/to/microecon-backend
+
+# Initialize Git
+git init
+
+# Add your GitHub repo as remote
+git remote add origin https://github.com/Ya-oki
+/microecon-backend.git
+
+# Stage and commit your files
+git add .
+git commit -m "Initial commit with backend code"
+
+# Push to GitHub
+git branch -M main
+git push -u origin main
