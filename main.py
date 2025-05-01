@@ -83,6 +83,25 @@ class ElasticityRequest(BaseModel):
     steps: int = Field(100, gt=1)
 
 # === Endpoints ===
+@app.get("/")
+def root():
+    """
+    Default root path returning available endpoints.
+    """
+    return {
+        "endpoints": [
+            "/health",
+            "/math-data",
+            "/math-data/",
+            "/cost-analysis",
+            "/supply-demand",
+            "/utility-maximization",
+            "/monopoly-pricing",
+            "/optimization",
+            "/elasticity"
+        ]
+    }
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -261,8 +280,9 @@ def elasticity(req: ElasticityRequest):
 
     return {"elasticity": elas, "revenue_behavior": behavior, "image_base64": fig_to_base64(fig)}
 
-# === New Endpoint: Fetch Math Topics Data with Images ===
+# === Math Topics Endpoint with Slash Variants ===
 @app.get("/math-data")
+@app.get("/math-data/")
 def math_data():
     """
     Returns base64-encoded placeholder images for each math topic.
@@ -276,6 +296,3 @@ def math_data():
         ax.axis('off')
         data[topic] = {"image_base64": fig_to_base64(fig)}
     return data
-
-# Note: Basic automated tests using TestClient have been removed due to missing httpx dependency.
-# Please test endpoints manually (e.g., with curl or HTTP client).
