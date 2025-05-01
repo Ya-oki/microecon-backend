@@ -1,3 +1,4 @@
+from fastapi.openapi.utils import get_openapi
 import sys, types
 # Stub ssl if missing in sandbox environment
 sys.modules['ssl'] = types.ModuleType('ssl')
@@ -21,6 +22,20 @@ app = FastAPI(
     description=description,
     version="1.0.0"
 )
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Microeconomic API",
+        version="1.0.0",
+        description="Backend for cost analysis, profit logic, and economic plotting",
+        routes=app.routes,
+        servers=[{"url": "https://microecon-backend.onrender.com"}]  # 👈 Important fix
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 # Enable CORS
 app.add_middleware(
