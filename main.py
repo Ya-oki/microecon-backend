@@ -1,4 +1,3 @@
-from fastapi.openapi.utils import get_openapi
 import sys, types
 # Stub ssl if missing in sandbox environment
 sys.modules['ssl'] = types.ModuleType('ssl')
@@ -22,20 +21,6 @@ app = FastAPI(
     description=description,
     version="1.0.0"
 )
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="Microeconomic API",
-        version="1.0.0",
-        description="Backend for cost analysis, profit logic, and economic plotting",
-        routes=app.routes,
-        servers=[{"url": "https://microecon-backend.onrender.com"}]  # 👈 Important fix
-    )
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-app.openapi = custom_openapi
 
 # Enable CORS
 app.add_middleware(
@@ -275,6 +260,22 @@ def elasticity(req: ElasticityRequest):
     ax.legend()
 
     return {"elasticity": elas, "revenue_behavior": behavior, "image_base64": fig_to_base64(fig)}
+
+# === New Endpoint: Fetch Math Topics Data with Images ===
+@app.get("/math-data")
+def math_data():
+    """
+    Returns base64-encoded placeholder images for each math topic.
+    Frontend can decode the image_base64 value to display.
+    """
+    topics = ["algebra", "combinatorics", "number_theory"]
+    data = {}
+    for topic in topics:
+        fig, ax = plt.subplots()
+        ax.text(0.5, 0.5, topic.replace('_', ' ').title(), fontsize=20, ha='center', va='center')
+        ax.axis('off')
+        data[topic] = {"image_base64": fig_to_base64(fig)}
+    return data
 
 # Note: Basic automated tests using TestClient have been removed due to missing httpx dependency.
 # Please test endpoints manually (e.g., with curl or HTTP client).
